@@ -1,0 +1,43 @@
+# Node Runner Configuration
+# -------------------------
+
+# Directory for log files (will create timestamped subdirectories)
+log_dir: logs
+
+# Default options (can all be overridden per node)
+defaults:
+  ssh_key: ~/.ssh/id_rsa
+  timeout: 30
+  user: ubuntu
+  port: 22
+  stop_on_error: true
+  no_logs: false
+  work_dir: /home/ubuntu/project
+
+# Define reusable command groups
+command_groups:
+  check:
+    - pwd
+    - whoami
+    - hostname
+
+  gpu_status:
+    - nvidia-smi
+
+# Define nodes and assign commands
+nodes:
+  - name: gpu-server-1
+    host: gpu1.example.com
+    commands: [check, gpu_status]
+
+  - name: gpu-server-2
+    host: gpu2.example.com
+    commands: [check, gpu_status]
+
+  - name: cpu-server
+    host: cpu.example.com
+    work_dir: /opt/app        # Override work_dir for this node
+    no_logs: true             # Disable logging for this node
+    commands:
+      - echo "Running on CPU server"
+      - uptime
