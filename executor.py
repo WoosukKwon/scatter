@@ -148,8 +148,8 @@ class Executor:
 
                     self._emit_output(node.name, f"$ {cmd}")
 
-                    # Prepend cd to work_dir for each command to ensure correct directory
-                    actual_cmd = f"cd {node.work_dir} && {cmd}" if node.work_dir else cmd
+                    # Build the actual command with env vars and work_dir
+                    actual_cmd = self._build_command(cmd, node.work_dir, node.envs)
 
                     success = await self._run_command(conn, node.name, actual_cmd)
 
@@ -170,6 +170,27 @@ class Executor:
             self._emit_status(node.name, NodeStatus.FAILED)
             state.error_message = f"Connection error: {e}"
             self._emit_output(node.name, f"ERROR: {e}")
+
+    def _build_command(
+        self, cmd: str, work_dir: str | None, envs: dict[str, str]
+    ) -> str:
+        """Build the actual command with environment variables and work directory."""
+        parts = []
+
+        # Add export statements for environment variables
+        for key, value in envs.items():
+            # Escape single quotes in the value
+            escaped_value = value.replace("'", "'\\''")
+            parts.append(f"export {key}='{escaped_value}'")
+
+        # Add cd to work_dir if specified
+        if work_dir:
+            parts.append(f"cd {work_dir}")
+
+        # Add the actual command
+        parts.append(cmd)
+
+        return " && ".join(parts)
 
     async def _run_command(
         self, conn: asyncssh.SSHClientConnection, node_name: str, cmd: str

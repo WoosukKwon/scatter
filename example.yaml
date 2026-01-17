@@ -13,6 +13,9 @@ defaults:
   stop_on_error: true
   no_logs: false
   work_dir: /home/ubuntu/project
+  envs:
+    PYTHONPATH: /home/ubuntu/project
+    LOG_LEVEL: INFO
 
 # Define reusable command groups
 command_groups:
@@ -38,6 +41,9 @@ nodes:
     host: cpu.example.com
     work_dir: /opt/app        # Override work_dir for this node
     no_logs: true             # Disable logging for this node
+    envs:                     # Per-node envs (merged with defaults, overrides default values)
+      LOG_LEVEL: DEBUG        # Override default LOG_LEVEL
+      CPU_ONLY: "true"        # Additional env var for this node
     commands:
       - echo "Running on CPU server"
       - uptime

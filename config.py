@@ -20,6 +20,7 @@ class Defaults:
     work_dir: str | None = None
     ssh_key: Path = field(default_factory=lambda: Path("~/.ssh/id_rsa").expanduser())
     timeout: int = 30
+    envs: dict[str, str] = field(default_factory=dict)
 
 
 @dataclass
@@ -36,6 +37,7 @@ class NodeConfig:
     work_dir: str | None = None
     ssh_key: Path = field(default_factory=lambda: Path("~/.ssh/id_rsa").expanduser())
     timeout: int = 30
+    envs: dict[str, str] = field(default_factory=dict)
 
 
 @dataclass
@@ -67,6 +69,8 @@ def _parse_defaults(raw: dict[str, Any]) -> Defaults:
     """Parse the defaults section."""
     defaults_raw = raw.get("defaults", {})
     ssh_key_str = defaults_raw.get("ssh_key", "~/.ssh/id_rsa")
+    envs_raw = defaults_raw.get("envs", {})
+    envs = {str(k): str(v) for k, v in envs_raw.items()}
     return Defaults(
         user=defaults_raw.get("user", "root"),
         port=defaults_raw.get("port", 22),
@@ -75,6 +79,7 @@ def _parse_defaults(raw: dict[str, Any]) -> Defaults:
         work_dir=defaults_raw.get("work_dir"),
         ssh_key=Path(ssh_key_str).expanduser(),
         timeout=defaults_raw.get("timeout", 30),
+        envs=envs,
     )
 
 
@@ -133,6 +138,10 @@ def _parse_node(
     if "ssh_key" in node_raw:
         ssh_key = Path(node_raw["ssh_key"]).expanduser()
 
+    # Merge environment variables: defaults + node-specific (node overrides defaults)
+    envs_raw = node_raw.get("envs", {})
+    envs = {**defaults.envs, **{str(k): str(v) for k, v in envs_raw.items()}}
+
     # Resolve commands - can be group references or direct commands
     commands_raw = node_raw.get("commands", [])
     commands = _resolve_commands(commands_raw, command_groups, name)
@@ -151,6 +160,7 @@ def _parse_node(
         work_dir=work_dir,
         ssh_key=ssh_key,
         timeout=timeout,
+        envs=envs,
     )
 
 
