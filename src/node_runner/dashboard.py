@@ -11,11 +11,11 @@ from textual.reactive import reactive
 from textual.widgets import Footer, Header, Label, RichLog, Static
 from textual.worker import Worker
 
-from config import Config
-from executor import Executor, NodeStatus
+from .config import Config
+from .executor import Executor, NodeStatus
 
 if TYPE_CHECKING:
-    from executor import NodeState
+    from .executor import NodeState
 
 
 STATUS_ICONS = {

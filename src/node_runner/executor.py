@@ -12,7 +12,7 @@ from typing import Callable
 
 import asyncssh
 
-from config import Config, NodeConfig
+from .config import Config, NodeConfig
 
 
 class NodeStatus(Enum):

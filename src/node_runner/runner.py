@@ -6,9 +6,9 @@ import asyncio
 import sys
 from pathlib import Path
 
-from config import load_config
-from dashboard import Dashboard
-from executor import Executor, NodeStatus
+from .config import load_config
+from .dashboard import Dashboard
+from .executor import Executor, NodeStatus
 
 
 def main() -> int:

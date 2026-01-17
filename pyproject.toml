@@ -1,0 +1,21 @@
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "node-runner"
+version = "0.1.0"
+description = "Run commands on multiple SSH nodes with real-time monitoring"
+readme = "README.md"
+requires-python = ">=3.9"
+dependencies = [
+    "asyncssh>=2.14.0",
+    "textual>=0.40.0",
+    "pyyaml>=6.0",
+]
+
+[project.scripts]
+node-runner = "node_runner.runner:main"
+
+[tool.setuptools.packages.find]
+where = ["src"]
